@@ -1,0 +1,22 @@
+---
+- name: Capture CSI pcap on RX nodes
+  hosts: rx
+  gather_facts: false
+
+  vars:
+    remote_dir: "/tmp/csi_capture"
+
+  tasks:
+    - name: Create capture directory in RAM/tmp
+      ansible.builtin.shell: "mkdir -p {{ remote_dir }}"
+
+    - name: Start tcpdump capture with timeout
+      ansible.builtin.shell: >
+        timeout {{ duration }}s /jffs/tcpdump -i {{ iface }} dst port 5500
+        -w {{ remote_dir }}/{{ inventory_hostname }}_{{ capture_id }}.pcap
+      async: "{{ duration | int + 20 }}"
+      poll: 0
+
+    - name: Show capture started
+      ansible.builtin.debug:
+        msg: "Started CSI capture on {{ inventory_hostname }} for {{ duration }} seconds"

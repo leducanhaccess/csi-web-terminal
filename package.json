@@ -1,0 +1,14 @@
+{
+  "name": "csi-web-terminal",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.17",
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
+  }
+}

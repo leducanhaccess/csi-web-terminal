@@ -1,0 +1,13 @@
+---
+- name: Load patched RX firmware
+  hosts: rx
+  gather_facts: false
+
+  tasks:
+    - name: Reload patched dhd driver
+      ansible.builtin.shell: >
+        /sbin/rmmod dhd 2>/dev/null || true;
+        /sbin/insmod /jffs/dhd.ko;
+        sleep 2;
+        /usr/sbin/wl -i {{ iface }} up || true;
+        echo RX_FIRMWARE_LOADED

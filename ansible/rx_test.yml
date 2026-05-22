@@ -1,0 +1,13 @@
+---
+- name: Test SSH connection to RX nodes
+  hosts: rx
+  gather_facts: false
+
+  tasks:
+    - name: Test remote shell
+      ansible.builtin.shell: "echo RX_SSH_OK && hostname || true"
+      register: test_out
+
+    - name: Print test result
+      ansible.builtin.debug:
+        var: test_out.stdout

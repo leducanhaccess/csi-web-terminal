@@ -1,0 +1,28 @@
+---
+- name: Configure RX nodes for Nexmon CSI
+  hosts: rx
+  gather_facts: false
+
+  tasks:
+    - name: Set country US
+      ansible.builtin.shell: "/usr/sbin/wl -i {{ iface }} country US"
+
+    - name: Set channel and bandwidth
+      ansible.builtin.shell: "/usr/sbin/wl -i {{ iface }} chanspec {{ channel }}/{{ bandwidth }}"
+
+    - name: Bring interface up
+      ansible.builtin.shell: "/usr/sbin/wl -i {{ iface }} up"
+
+    - name: Configure CSI extractor using backend-generated param
+      ansible.builtin.shell: "/jffs/nexutil -I{{ iface }} -s500 -b -l34 -v{{ csi_param }}"
+
+    - name: Enable monitor mode on bcm4366c0
+      ansible.builtin.shell: "/usr/sbin/wl -i {{ iface }} monitor 1"
+
+    - name: Check current extractor/chanspec
+      ansible.builtin.shell: "/jffs/nexutil -I{{ iface }} -k"
+      register: csi_check
+
+    - name: Print nexutil -k result
+      ansible.builtin.debug:
+        var: csi_check.stdout

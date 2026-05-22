@@ -1,0 +1,18 @@
+---
+- name: Check RX required tools
+  hosts: rx
+  gather_facts: false
+
+  tasks:
+    - name: Check dhd.ko
+      ansible.builtin.shell: "test -f /jffs/dhd.ko"
+
+    - name: Check nexutil
+      ansible.builtin.shell: "test -x /jffs/nexutil"
+
+    - name: Check tcpdump
+      ansible.builtin.shell: "test -x /jffs/tcpdump"
+
+    - name: Print result
+      ansible.builtin.debug:
+        msg: "RX tools OK on {{ inventory_hostname }}"

@@ -1,0 +1,25 @@
+---
+- name: Fetch CSI pcap files from RX nodes
+  hosts: rx
+  gather_facts: false
+
+  vars:
+    remote_dir: "/tmp/csi_capture"
+
+  tasks:
+    - name: Check pcap exists
+      ansible.builtin.shell: "ls -lh {{ remote_dir }}/{{ inventory_hostname }}_{{ capture_id }}.pcap"
+      register: pcap_check
+
+    - name: Print pcap size
+      ansible.builtin.debug:
+        var: pcap_check.stdout
+
+    - name: Fetch pcap to backend Desktop
+      ansible.builtin.fetch:
+        src: "{{ remote_dir }}/{{ inventory_hostname }}_{{ capture_id }}.pcap"
+        dest: "{{ local_dir }}/{{ inventory_hostname }}_{{ capture_id }}.pcap"
+        flat: true
+
+    - name: Remove temporary pcap on RX after successful fetch
+      ansible.builtin.shell: "rm -f {{ remote_dir }}/{{ inventory_hostname }}_{{ capture_id }}.pcap"
