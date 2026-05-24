@@ -553,7 +553,35 @@ io.on("connection", socket => {
       notify(socket, "error", `Configure RX lỗi: ${err.message}`);
     }
   });
+  socket.on("rx-verify-tx", async cfg => {
+    let rxList;
 
+    try {
+      rxList = getRxList(cfg.rxList);
+      resetInactiveRxStatus(rxList);
+
+      rxList.forEach(rx => {
+        setRxStatus(rx.name, "online", "Verifying TX signal...");
+      });
+
+      await runAnsible(socket, "ansible/rx_verify_tx.yml", rxList, {
+        verify_seconds: 5,
+        min_packets: 5
+      });
+
+      rxList.forEach(rx => {
+        setRxStatus(rx.name, "configured", "CSI packets detected");
+      });
+
+      notify(socket, "success", `RX đã thấy CSI packets. TX đang phát và RX nhận được.`);
+    } catch (err) {
+      if (rxList) {
+        rxList.forEach(rx => setRxStatus(rx.name, "error", "No CSI packets detected"));
+      }
+
+      notify(socket, "error", `Không thấy CSI packet. Có thể TX chưa phát, sai channel/bandwidth, hoặc RX chưa configure.`);
+    }
+  });
   socket.on("rx-capture", async cfg => {
     let rxList;
 

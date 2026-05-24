@@ -1,0 +1,14 @@
+---
+- name: Verify TX signal by checking CSI packets on RX
+  hosts: rx
+  gather_facts: false
+
+  tasks:
+    - name: Check CSI packets on port 5500
+      ansible.builtin.shell: >
+        timeout {{ verify_seconds }}s /jffs/tcpdump -i {{ iface }} dst port 5500 -c {{ min_packets }}
+      register: verify_out
+
+    - name: Print verify result
+      ansible.builtin.debug:
+        var: verify_out.stdout

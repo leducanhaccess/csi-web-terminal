@@ -225,6 +225,7 @@
       <button onclick="rxCheck()">Check RX Tools</button>
       <button onclick="rxLoadFw()">Load RX Firmware</button>
       <button onclick="rxConfigure()">Configure RX Active</button>
+      <button onclick="rxVerifyTx()">Verify TX Signal</button>
       <button onclick="rxCapture()">Start Capture</button>
       <button onclick="rxFetch()">Fetch + Zip PCAP</button>
       <button class="run" onclick="fullRun()">Full Run Auto</button>
@@ -440,6 +441,11 @@
     function rxConfigure() {
       socket.emit("rx-configure", rxConfig());
     }
+    function rxVerifyTx() {
+       socket.emit("rx-verify-tx", {
+        rxList: rxList()
+    });
+    }
 
     function rxCapture() {
       socket.emit("rx-capture", rxConfig());
@@ -463,3 +469,4 @@
   </script>
 </body>
 </html>
+
